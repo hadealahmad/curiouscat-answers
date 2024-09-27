@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CuriousCat Data Viewer</title>
+    <title>بيانات حساب كيوريس كات</title>
     <script src="https://cdn.tailwindcss.com"></script> <!-- Add Tailwind CDN -->
     <style>
         /* Custom styling for scrollbar in message container */
@@ -22,7 +22,7 @@
     <div class="container mx-auto p-4">
 
         <!-- Page title -->
-        <h1 class="text-3xl font-bold text-center mb-6">بيانات CuriousCat</h1>
+        <h1 class="text-3xl font-bold text-center mb-6">بيانات حساب كيوريس كات</h1>
 
         <!-- Search container -->
         <div class="search-container flex justify-center mb-4">
@@ -76,14 +76,14 @@
 
                 const timestamp = document.createElement('div');
                 timestamp.classList.add('message-header', 'font-semibold', 'text-gray-600', 'mb-2');
-                timestamp.textContent = الوقت: ${message.timestamp};
+                timestamp.textContent = `الوقت: ${message.timestamp}`;
 
                 const msgContent = document.createElement('p');
-                msgContent.textContent = الرسالة: ${message.message};
+                msgContent.textContent = `الرسالة: ${message.message}`;
                 msgContent.classList.add('text-gray-800', 'mb-2');
 
                 const replyContent = document.createElement('p');
-                replyContent.textContent = الرد: ${message.reply};
+                replyContent.textContent = `الرد: ${message.reply}`;
                 replyContent.classList.add('text-gray-600');
 
                 messageDiv.appendChild(timestamp);
