@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CuriousCat API Fetcher</title>
+    <title>تحميل أرشيف كيوريس كات</title>
 </head>
 <body>
-    <h1>CuriousCat Username Input</h1>
-    <label for="username">Enter Username:</label>
+    <h2>أدخل اسم المستخدم</h1>
+    <label for="username">اسم المستخدم:</label>
     <input type="text" id="username" placeholder="Username" required>
-    <button id="fetchData">Fetch and Download Answers</button>
+    <button id="fetchData">تحميل الأرشيف</button>
     <pre id="status"></pre>
 
     <script>
@@ -20,8 +20,8 @@
                 const data = await response.json();
                 return data;
             } catch (error) {
-                console.error("Error fetching profile data:", error);
-                return { error: "Error fetching data" };
+                console.error("خطأ:", error);
+                return { error: "فشل سحب البيانات" };
             }
         }
 
@@ -74,17 +74,17 @@
             const profileData = await fetchProfileData(username);
 
             if (profileData.error) {
-                document.getElementById('status').innerText = "Profile not found!";
+                document.getElementById('status').innerText = "لم يتم العثور على المستخدم!";
                 return;
             }
 
             const totalAnswers = profileData.answers || 0;
             if (!totalAnswers) {
-                document.getElementById('status').innerText = "No answers found.";
+                document.getElementById('status').innerText = "لم يتم العثور على أيّ أسئلة.";
                 return;
             }
 
-            document.getElementById('status').innerText = `Fetching ${totalAnswers} answers...`;
+            document.getElementById('status').innerText = `جاري سحب ${totalAnswers} سؤال...`;
 
             const messages = await fetchMessages(username, totalAnswers);
 
@@ -99,7 +99,7 @@
 
             downloadJson(`${username}_answers.json`, resultData);
 
-            document.getElementById('status').innerText = "Download complete.";
+            document.getElementById('status').innerText = "اكتمل التحميل، احفظ الملف.";
         });
     </script>
 </body>
