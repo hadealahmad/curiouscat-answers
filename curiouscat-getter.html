@@ -74,19 +74,24 @@
                     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
                     <title>${data.username} - أرشيف كيوريس كات</title>
                 </head>
-                <body class="p-4 bg-gray-100">
-                    <h1 class="text-2xl font-bold mb-4">${data.username}</h1>
-                    <p>عدد الإجابات: ${data.answers}</p>
-                    <p>المتابعين: ${data.followers}</p>
-                    <p>المتابعين: ${data.following}</p>
-                    <h2 class="mt-4 mb-2">الرسائل:</h2>
-                    <ul class="list-disc pl-5">
-                        ${data.messages.map(msg => `
-                            <li class="mb-2">
-                                <strong>${msg.timestamp}:</strong> ${msg.message} ${msg.reply ? `<br><strong>الرد:</strong> ${msg.reply}` : ''}
-                            </li>
-                        `).join('')}
-                    </ul>
+                <body class="p-6 bg-gray-100 text-gray-800">
+                    <div class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+                        <h1 class="text-3xl font-bold mb-4 text-center border-b-2 border-gray-300 pb-2">${data.username}</h1>
+                        <p class="text-lg mb-2"><strong>عدد الإجابات:</strong> ${data.answers}</p>
+                        <p class="text-lg mb-2"><strong>المتابعين:</strong> ${data.followers}</p>
+                        <p class="text-lg mb-4"><strong>المتابعين:</strong> ${data.following}</p>
+                        <h2 class="text-2xl font-semibold mb-2">الرسائل:</h2>
+                        <ul class="list-disc pl-5">
+                            ${data.messages.map(msg => `
+                                <li class="mb-4 p-2 border-b border-gray-200">
+                                    <div>
+                                        <strong class="text-blue-600">${msg.timestamp}</strong>: ${msg.message}
+                                    </div>
+                                    ${msg.reply ? `<div class="mt-1 text-gray-700"><strong>الرد:</strong> ${msg.reply}</div>` : ''}
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
                 </body>
                 </html>
             `;
@@ -133,51 +138,4 @@
                 following: profileData.following,
                 twitter: `https://twitter.com/intent/user?user_id=${profileData.userData?.twitterid || ''}`,
                 messages: messages.length ? messages : '[No Messages]'
-            };
-
-            downloadJson(`${username}_answers.json`, resultData);
-
-            document.getElementById('status').innerText = "اكتمل التحميل، احفظ الملف.";
-        });
-
-        document.getElementById('fetchHtml').addEventListener('click', async () => {
-            const username = document.getElementById('username').value;
-            if (!username) {
-                document.getElementById('status').innerText = "يرجى إدخال اسم مستخدم صالح.";
-                return;
-            }
-
-            document.getElementById('status').innerText = "جار سحب البيانات...";
-
-            const profileData = await fetchProfileData(username);
-
-            if (profileData.error) {
-                document.getElementById('status').innerText = "لم يتم العثور على المستخدم!";
-                return;
-            }
-
-            const totalAnswers = profileData.answers || 0;
-            if (!totalAnswers) {
-                document.getElementById('status').innerText = "لم يتم العثور على أيّ أسئلة.";
-                return;
-            }
-
-            document.getElementById('status').innerText = `جاري سحب ${totalAnswers} سؤال...`;
-
-            const messages = await fetchMessages(username, totalAnswers);
-
-            const resultData = {
-                username: profileData.username,
-                answers: totalAnswers,
-                followers: profileData.followers,
-                following: profileData.following,
-                messages: messages.length ? messages : '[No Messages]'
-            };
-
-            downloadHtml(`${username}_answers.html`, resultData);
-
-            document.getElementById('status').innerText = "اكتمل التحميل، احفظ الملف.";
-        });
-    </script>
-</body>
-</html>
+           
