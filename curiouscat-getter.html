@@ -138,4 +138,51 @@
                 following: profileData.following,
                 twitter: `https://twitter.com/intent/user?user_id=${profileData.userData?.twitterid || ''}`,
                 messages: messages.length ? messages : '[No Messages]'
-           
+            };
+
+            downloadJson(`${username}_answers.json`, resultData);
+
+            document.getElementById('status').innerText = "اكتمل التحميل، احفظ الملف.";
+        });
+
+        document.getElementById('fetchHtml').addEventListener('click', async () => {
+            const username = document.getElementById('username').value;
+            if (!username) {
+                document.getElementById('status').innerText = "يرجى إدخال اسم مستخدم صالح.";
+                return;
+            }
+
+            document.getElementById('status').innerText = "جار سحب البيانات...";
+
+            const profileData = await fetchProfileData(username);
+
+            if (profileData.error) {
+                document.getElementById('status').innerText = "لم يتم العثور على المستخدم!";
+                return;
+            }
+
+            const totalAnswers = profileData.answers || 0;
+            if (!totalAnswers) {
+                document.getElementById('status').innerText = "لم يتم العثور على أيّ أسئلة.";
+                return;
+            }
+
+            document.getElementById('status').innerText = `جاري سحب ${totalAnswers} سؤال...`;
+
+            const messages = await fetchMessages(username, totalAnswers);
+
+            const resultData = {
+                username: profileData.username,
+                answers: totalAnswers,
+                followers: profileData.followers,
+                following: profileData.following,
+                messages: messages.length ? messages : '[No Messages]'
+            };
+
+            downloadHtml(`${username}_answers.html`, resultData);
+
+            document.getElementById('status').innerText = "اكتمل التحميل، احفظ الملف.";
+        });
+    </script>
+</body>
+</html>
