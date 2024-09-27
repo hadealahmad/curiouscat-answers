@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CuriousCat API Fetcher</title>
+</head>
+<body>
+    <h1>CuriousCat Username Input</h1>
+    <label for="username">Enter Username:</label>
+    <input type="text" id="username" placeholder="Username" required>
+    <button id="fetchData">Fetch and Download Answers</button>
+    <pre id="status"></pre>
+
+    <script>
+        async function fetchProfileData(username) {
+            const apiUrl = `https://curiouscat.me/api/v2/profile?username=${username}`;
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error("Error fetching profile data:", error);
+                return { error: "Error fetching data" };
+            }
+        }
+
+        async function fetchMessages(username, totalAnswers) {
+            let messages = [];
+            let lastTimestamp = 0;
+
+            while (messages.length < totalAnswers) {
+                const apiUrl = `https://curiouscat.me/api/v2/profile?username=${username}&count=100${lastTimestamp ? `&max_timestamp=${lastTimestamp}` : ''}`;
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+
+                if (data.posts && data.posts.length) {
+                    data.posts.forEach(post => {
+                        messages.push({
+                            timestamp: new Date(post.timestamp * 1000).toISOString(),
+                            message: post.comment,
+                            reply: post.reply
+                        });
+                    });
+                    lastTimestamp = data.posts[data.posts.length - 1].timestamp - 1;
+                } else {
+                    break;
+                }
+            }
+
+            return messages;
+        }
+
+        function downloadJson(filename, data) {
+            const blob = new Blob([JSON.stringify(data, null, 4)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        document.getElementById('fetchData').addEventListener('click', async () => {
+            const username = document.getElementById('username').value;
+            if (!username) {
+                document.getElementById('status').innerText = "Please enter a valid username.";
+                return;
+            }
+
+            document.getElementById('status').innerText = "Fetching profile data...";
+
+            const profileData = await fetchProfileData(username);
+
+            if (profileData.error) {
+                document.getElementById('status').innerText = "Profile not found!";
+                return;
+            }
+
+            const totalAnswers = profileData.answers || 0;
+            if (!totalAnswers) {
+                document.getElementById('status').innerText = "No answers found.";
+                return;
+            }
+
+            document.getElementById('status').innerText = `Fetching ${totalAnswers} answers...`;
+
+            const messages = await fetchMessages(username, totalAnswers);
+
+            const resultData = {
+                username: profileData.username,
+                answers: totalAnswers,
+                followers: profileData.followers,
+                following: profileData.following,
+                twitter: `https://twitter.com/intent/user?user_id=${profileData.userData?.twitterid || ''}`,
+                messages: messages.length ? messages : '[No Messages]'
+            };
+
+            downloadJson(`${username}_answers.json`, resultData);
+
+            document.getElementById('status').innerText = "Download complete.";
+        });
+    </script>
+</body>
+</html>
