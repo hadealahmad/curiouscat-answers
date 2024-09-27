@@ -65,11 +65,11 @@
         document.getElementById('fetchData').addEventListener('click', async () => {
             const username = document.getElementById('username').value;
             if (!username) {
-                document.getElementById('status').innerText = "Please enter a valid username.";
+                document.getElementById('status').innerText = "يرجى إدخال اسم مستخدم صالح.";
                 return;
             }
 
-            document.getElementById('status').innerText = "Fetching profile data...";
+            document.getElementById('status').innerText = "جاري سحب البيانات...";
 
             const profileData = await fetchProfileData(username);
 
