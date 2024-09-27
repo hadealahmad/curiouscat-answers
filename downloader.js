@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        document.getElementById('status').innerText = `جاري سحب ${totalAnswers} سؤال...`;
+        document.getElementById('status').innerText = `جار سحب ${totalAnswers} سؤال...`;
 
         const messages = await fetchMessages(username, totalAnswers);
 
