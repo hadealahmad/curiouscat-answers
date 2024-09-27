@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CuriousCat Data Viewer</title>
+    <script src="https://cdn.tailwindcss.com"></script> <!-- Add Tailwind CDN -->
+    <style>
+        /* Custom styling for scrollbar in message container */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;     /* Firefox */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900">
+
+    <!-- Main container -->
+    <div class="container mx-auto p-4">
+
+        <!-- Page title -->
+        <h1 class="text-3xl font-bold text-center mb-6">بيانات CuriousCat</h1>
+
+        <!-- Search container -->
+        <div class="search-container flex justify-center mb-4">
+            <div class="w-full max-w-md">
+                <label for="search" class="block text-lg mb-2">ابحث في الرسائل:</label>
+                <input
+                    type="text"
+                    id="search"
+                    placeholder="ابحث عن الرسائل أو الردود"
+                    class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                >
+            </div>
+        </div>
+
+        <!-- Messages container -->
+        <div
+            id="messageContainer"
+            class="message-container space-y-4 overflow-y-auto scrollbar-hide max-h-[60vh] p-4 bg-white shadow-md rounded-lg">
+            <!-- Messages will be dynamically added here -->
+        </div>
+    </div>
+
+    <script>
+        const jsonUrl = ' '; // Replace with your actual GitHub Pages URL
+
+        // Function to load JSON data from URL
+        async function loadData() {
+            try {
+                const response = await fetch(jsonUrl);
+                const data = await response.json();
+                displayMessages(data.messages);
+            } catch (error) {
+                console.error('Error loading JSON:', error);
+                document.getElementById('messageContainer').innerHTML = '<p>فشل تحميل البيانات</p>';
+            }
+        }
+
+        // Function to display messages on the page
+        function displayMessages(messages) {
+            const container = document.getElementById('messageContainer');
+            container.innerHTML = ''; // Clear previous content
+
+            if (messages.length === 0) {
+                container.innerHTML = '<p>لا توجد رسائل</p>';
+                return;
+            }
+
+            messages.forEach(message => {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message', 'p-4', 'border', 'border-gray-200', 'rounded-lg', 'shadow-sm', 'bg-gray-50');
+
+                const timestamp = document.createElement('div');
+                timestamp.classList.add('message-header', 'font-semibold', 'text-gray-600', 'mb-2');
+                timestamp.textContent = الوقت: ${message.timestamp};
+
+                const msgContent = document.createElement('p');
+                msgContent.textContent = الرسالة: ${message.message};
+                msgContent.classList.add('text-gray-800', 'mb-2');
+
+                const replyContent = document.createElement('p');
+                replyContent.textContent = الرد: ${message.reply};
+                replyContent.classList.add('text-gray-600');
+
+                messageDiv.appendChild(timestamp);
+                messageDiv.appendChild(msgContent);
+                messageDiv.appendChild(replyContent);
+                container.appendChild(messageDiv);
+            });
+        }
+
+        // Function to filter messages based on search input
+        function filterMessages(event) {
+            const searchValue = event.target.value.toLowerCase();
+
+            // Load JSON again for filtering (or you could store the messages in a variable)
+            fetch(jsonUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const filteredMessages = data.messages.filter(message => {
+                        return (
+                            message.message.toLowerCase().includes(searchValue) ||
+                            message.reply.toLowerCase().includes(searchValue)
+                        );
+                    });
+                    displayMessages(filteredMessages);
+                })
+                .catch(error => console.error('Error filtering messages:', error));
+        }
+
+        // Event listener for search input
+        document.getElementById('search').addEventListener('input', filterMessages);
+
+        // Load data when the page loads
+        window.onload = loadData;
+    </script>
+</body>
+</html>
